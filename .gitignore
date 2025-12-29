@@ -1,0 +1,18 @@
+# .NET Core Build Dosyaları
+bin/
+obj/
+.vs/
+.vscode/
+*.user
+
+# Python Scraper Dosyaları
+venv/
+__pycache__/
+*.pyc
+
+# OS Dosyaları
+.DS_Store
+Thumbs.db
+
+# Hassas Veriler
+# appsettings.Development.json
