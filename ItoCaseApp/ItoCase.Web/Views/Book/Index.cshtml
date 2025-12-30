@@ -1,0 +1,214 @@
+@{
+    ViewData["Title"] = "Kitap Yönetimi";
+}
+
+<div class="container-fluid mt-4">
+
+    @if (User.IsInRole("Admin") || User.IsInRole("Uzman"))
+    {
+        <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">📂 Excel Veri Aktarımı</h5>
+                <button class="btn btn-light btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#uploadArea">
+                    Panel Aç/Kapat
+                </button>
+            </div>
+            <div class="collapse show" id="uploadArea">
+                <div class="card-body">
+                    @if (ViewBag.Message != null)
+                    {
+                        var alertClass = ViewBag.Status == "success" ? "alert-success" : "alert-danger";
+                        <div class="alert @alertClass">@ViewBag.Message</div>
+                    }
+
+                    <form asp-action="UploadExcel" asp-controller="Book" method="post" enctype="multipart/form-data"
+                        class="row g-3 align-items-end">
+                        <div class="col-md-10">
+                            <label class="form-label">Excel Dosyası Seç (Ito_Case_Kitaplari.xlsx)</label>
+                            <input type="file" name="file" class="form-control" accept=".xlsx, .xls" required />
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-success w-100">Yükle 🚀</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="m-0 font-weight-bold text-info">📊 Kitap Analiz Paneli</h5>
+
+                    <div class="d-flex gap-2">
+                        <select id="strategySelect" class="form-select form-select-sm" style="width: 200px;">
+                            <option value="BooksByCategory">Kategorilere Göre Dağılım</option>
+
+                            <option value="BestSellers">En Çok Satan 10 Kitap</option>
+                        </select>
+
+                        <select id="chartTypeSelect" class="form-select form-select-sm" style="width: 150px;">
+                            <option value="bar">Sütun Grafik (Bar)</option>
+                            <option value="pie">Pasta Grafik (Pie)</option>
+                            <option value="line">Çizgi Grafik (Line)</option>
+                            <option value="doughnut">Halka Grafik</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div style="height: 400px;">
+                        <canvas id="myChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-header bg-white py-3">
+            <h5 class="m-0 font-weight-bold text-primary">📚 Kitap Listesi (Server-side)</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover" id="booksTable" width="100%"
+                    cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Kitap Adı</th>
+                            <th>Yazar</th>
+                            <th>Yayınevi</th>
+                            <th>Kategori</th>
+                            <th>Fiyat</th>
+                            <th>Satış</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#booksTable').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "filter": true,
+                "ajax": {
+                    "url": "/Book/GetBooksAjax",
+                    "type": "POST",
+                    "datatype": "json"
+                },
+                "columns": [
+                    { "data": "kitapAdi", "name": "KitapAdi", "autoWidth": true },
+                    { "data": "yazar", "name": "Yazar", "autoWidth": true },
+                    { "data": "yayinevi", "name": "Yayinevi", "autoWidth": true },
+                    { "data": "anaKategori", "name": "AnaKategori", "autoWidth": true },
+                    {
+                        "data": "fiyat", "name": "Fiyat",
+                        "render": function (data) {
+                            return parseFloat(data).toFixed(2) + ' ₺';
+                        }
+                    },
+                    { "data": "satisRakamlari", "name": "SatisRakamlari", "autoWidth": true }
+                ],
+                // DOM Ayarı: Tablonun üstünü ve altını düzenler (Çift yazıyı engeller)
+                "dom": '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+                    '<"row"<"col-sm-12"tr>>' +
+                    '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+
+                // Türkçe Dil Ayarları (Manuel Tanımlama)
+                "language": {
+                    "emptyTable": "Tabloda herhangi bir veri mevcut değil",
+                    "info": "_TOTAL_ kayıttan _START_ - _END_ arasındaki kayıtlar gösteriliyor",
+                    "infoEmpty": "Kayıt yok",
+                    "infoFiltered": "(_MAX_ kayıt içerisinden bulunan)",
+                    "lengthMenu": "Sayfada _MENU_ kayıt göster",
+                    "loadingRecords": "Yükleniyor...",
+                    "processing": "İşleniyor...",
+                    "search": "Ara:",
+                    "zeroRecords": "Eşleşen kayıt bulunamadı",
+                    "paginate": {
+                        "first": "İlk",
+                        "last": "Son",
+                        "next": "Sonraki",
+                        "previous": "Önceki"
+                    }
+                }
+            });
+
+            // Global değişken (Grafiği silip yeniden yaratmak için gerekli)
+            var myChartContext = null;
+
+            // Sayfa açılınca ilk grafiği yükle
+            loadChart();
+
+            // Kullanıcı seçim yapınca grafiği güncelle
+            $('#strategySelect, #chartTypeSelect').change(function () {
+                loadChart();
+            });
+
+            function loadChart() {
+                var strategy = $('#strategySelect').val();
+                var chartType = $('#chartTypeSelect').val();
+
+                $.ajax({
+                    url: '/Book/GetChartData',
+                    type: 'GET',
+                    data: { strategy: strategy }, // Controller'a hangi stratejiyi istediğimizi söylüyoruz
+                    success: function (response) {
+                        renderChart(response, chartType);
+                    },
+                    error: function (err) {
+                        console.error("Grafik verisi alınamadı:", err);
+                        // Eğer strateji bulunamazsa kullanıcıya kibar bir hata gösterilebilir
+                    }
+                });
+            }
+
+            function renderChart(data, type) {
+                var ctx = document.getElementById('myChart').getContext('2d');
+
+                // Eğer eski bir grafik varsa yok et (Yoksa üst üste biner)
+                if (myChartContext != null) {
+                    myChartContext.destroy();
+                }
+
+                // Backend'den gelen List<ChartDto> verisini ayıkla
+                var labels = data.map(x => x.label);
+                var values = data.map(x => x.value);
+
+                // Rastgele renkler üret (Estetik için)
+                var backgroundColors = labels.map(() =>
+                    `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.6)`
+                );
+
+                // Yeni grafiği oluştur
+                myChartContext = new Chart(ctx, {
+                    type: type, // Kullanıcının seçtiği tip (bar, pie, vs.)
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Veri Analizi',
+                            data: values,
+                            backgroundColor: backgroundColors,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: { beginAtZero: true, display: type !== 'pie' && type !== 'doughnut' } // Pasta grafikte Y ekseni olmaz
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+}
