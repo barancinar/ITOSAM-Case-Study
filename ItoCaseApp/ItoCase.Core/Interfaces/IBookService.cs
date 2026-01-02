@@ -13,5 +13,7 @@ namespace ItoCase.Core.Interfaces
         Task DeleteBookAsync(int id);
         Task<BookDto> GetBookByIdAsync(int id);
         Task UpdateBookAsync(BookDto bookDto);
+        Task ClearAllBooksAsync();
+        Task AddBookAsync(BookCreateDto bookDto);
     }
 }

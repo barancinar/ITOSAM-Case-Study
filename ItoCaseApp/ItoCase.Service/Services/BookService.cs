@@ -101,6 +101,40 @@ namespace ItoCase.Service.Services
             // 1. Sorguyu Başlat
             var query = _unitOfWork.Books.Where(x => true);
 
+            // --- ADVANCED FILTERS (NEW) ---
+            if (!string.IsNullOrEmpty(request.FilterCategory))
+            {
+                // Kategorinin içerip içermediğine bakalım (veya tam eşleşme)
+                query = query.Where(x => x.AnaKategori != null && x.AnaKategori.Contains(request.FilterCategory));
+            }
+            if (!string.IsNullOrEmpty(request.FilterAuthor))
+            {
+                query = query.Where(x => x.Yazar != null && x.Yazar.Contains(request.FilterAuthor));
+            }
+            if (!string.IsNullOrEmpty(request.FilterYear))
+            {
+                query = query.Where(x => x.BasimYili != null && x.BasimYili.Contains(request.FilterYear));
+            }
+
+            // Numeric Filters
+            if (request.FilterMinPrice.HasValue)
+            {
+                query = query.Where(x => x.Fiyat >= request.FilterMinPrice.Value);
+            }
+            if (request.FilterMaxPrice.HasValue)
+            {
+                query = query.Where(x => x.Fiyat <= request.FilterMaxPrice.Value);
+            }
+            
+            if (request.FilterMinSales.HasValue)
+            {
+                query = query.Where(x => x.SatisRakamlari >= request.FilterMinSales.Value);
+            }
+            if (request.FilterMaxSales.HasValue)
+            {
+                query = query.Where(x => x.SatisRakamlari <= request.FilterMaxSales.Value);
+            }
+
             // 2. Arama (Search) - NULL KONTROLLÜ GÜVENLİ VERSİYON
             if (request.Search != null && !string.IsNullOrEmpty(request.Search.Value))
             {
@@ -217,6 +251,42 @@ namespace ItoCase.Service.Services
                 _unitOfWork.Books.Update(book);
                 await _unitOfWork.CommitAsync();
             }
+        }
+
+        public async Task ClearAllBooksAsync()
+        {
+            var allBooks = await _unitOfWork.Books.GetAllAsync();
+            if (allBooks.Any())
+            {
+               foreach(var book in allBooks)
+               {
+                   _unitOfWork.Books.Remove(book);
+               }
+               await _unitOfWork.CommitAsync();
+            }
+        }
+
+        public async Task AddBookAsync(BookCreateDto bookDto)
+        {
+            var book = new Book
+            {
+                KitapAdi = bookDto.KitapAdi,
+                Yazar = bookDto.Yazar,
+                Yayinevi = bookDto.Yayinevi,
+                AnaKategori = bookDto.AnaKategori,
+                Turu = bookDto.Turu,
+                Fiyat = bookDto.Fiyat,
+                SatisRakamlari = bookDto.SatisRakamlari,
+                ISBN = bookDto.ISBN,
+                SayfaSayisi = bookDto.SayfaSayisi,
+                BasimYili = bookDto.BasimYili,
+                KagitTipi = bookDto.KagitTipi,
+                KapakTipi = bookDto.KapakTipi
+                // Id otomatik artan
+            };
+
+            await _unitOfWork.Books.AddAsync(book);
+            await _unitOfWork.CommitAsync();
         }
     }
 }

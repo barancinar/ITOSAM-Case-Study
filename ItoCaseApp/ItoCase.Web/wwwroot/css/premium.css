@@ -1,22 +1,23 @@
 :root {
-    /* Modern Palette - Deep Indigo & Slate */
-    --primary-color: #4f46e5;
-    /* Indigo 600 */
-    --primary-hover: #4338ca;
-    /* Indigo 700 */
-    --secondary-color: #64748b;
-    /* Slate 500 */
+    --primary-color: #008F9F;
+
+    --primary-hover: #006371;
+
+    --secondary-color: #475569;
+
+    /* Arka planlar */
     --background-color: #f8fafc;
-    /* Slate 50 */
     --surface-color: #ffffff;
 
     /* Functional Colors */
     --success-color: #10b981;
-    /* Emerald 500 */
+    /* Emerald */
     --warning-color: #f59e0b;
-    /* Amber 500 */
+    /* Amber */
     --danger-color: #ef4444;
-    /* Red 500 */
+    /* Red */
+
+    /* Metin Renkleri */
     --text-main: #1e293b;
     /* Slate 800 */
     --text-muted: #94a3b8;
@@ -105,7 +106,6 @@ body {
 
 .modern-table thead th {
     background-color: #f1f5f9;
-    /* Slate 100 */
     color: var(--secondary-color);
     font-weight: 600;
     font-size: 0.75rem;
@@ -148,6 +148,7 @@ body {
     transform: translateY(-1px);
     box-shadow: var(--shadow-md);
     color: white;
+    font-weight: 500;
 }
 
 /* Form Controls */
@@ -163,8 +164,7 @@ body {
 .form-control:focus,
 .form-select:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-    /* Indigo ring */
+    box-shadow: 0 0 0 3px rgba(0, 143, 159, 0.1);
 }
 
 .form-label {
@@ -198,15 +198,13 @@ body {
     border-radius: 9999px;
 }
 
-/* Seamless Input Group Focus */
 .input-group {
     border-radius: var(--radius-md);
     transition: box-shadow 0.2s;
 }
 
 .input-group:focus-within {
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-    /* Indigo Ring around entire group */
+    box-shadow: 0 0 0 3px rgba(0, 143, 159, 0.1);
     z-index: 5;
 }
 
@@ -214,5 +212,4 @@ body {
 .input-group:focus-within .input-group-text {
     border-color: var(--primary-color) !important;
     box-shadow: none !important;
-    /* Remove inner shadows */
 }

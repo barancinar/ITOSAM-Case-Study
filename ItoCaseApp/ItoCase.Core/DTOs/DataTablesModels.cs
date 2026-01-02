@@ -9,6 +9,17 @@ namespace ItoCase.Core.DTOs
         public Search? Search { get; set; }
         public List<Column>? Columns { get; set; }
         public List<Order>? Order { get; set; }
+
+        // --- FILTER PARAMETERS ---
+        public string? FilterCategory { get; set; }
+        public string? FilterAuthor { get; set; }
+        public string? FilterYear { get; set; }
+        
+        public decimal? FilterMinPrice { get; set; }
+        public decimal? FilterMaxPrice { get; set; }
+        
+        public int? FilterMinSales { get; set; }
+        public int? FilterMaxSales { get; set; }
     }
 
     public class Search

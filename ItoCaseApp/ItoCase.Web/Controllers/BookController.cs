@@ -85,6 +85,21 @@ namespace ItoCase.Web.Controllers
             return Json(new { success = true, message = "Kitap başarıyla silindi." });
         }
 
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ClearAll()
+        {
+            try
+            {
+                await _bookService.ClearAllBooksAsync();
+                return Json(new { success = true, message = "Tüm kitap verileri başarıyla temizlendi." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Silme işlemi başarısız: " + ex.Message });
+            }
+        }
+
         // CRUD - Edit (GET)
         [HttpGet]
         [Authorize(Roles = "Admin,Uzman")]
@@ -121,6 +136,38 @@ namespace ItoCase.Web.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "Güncelleme hatası: " + ex.Message);
+                return View(model);
+            }
+        }
+
+        // CRUD - Create (GET)
+        [HttpGet]
+        [Authorize(Roles = "Admin,Uzman")]
+        public IActionResult Create()
+        {
+            return View(new BookCreateDto());
+        }
+
+        // CRUD - Create (POST)
+        [HttpPost]
+        [Authorize(Roles = "Admin,Uzman")]
+        public async Task<IActionResult> Create(BookCreateDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
+            {
+                await _bookService.AddBookAsync(model);
+                // Başarılı olursa listeye dön
+                TempData["SuccessMessage"] = "Kitap başarıyla eklendi.";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Ekleme hatası: " + ex.Message);
                 return View(model);
             }
         }

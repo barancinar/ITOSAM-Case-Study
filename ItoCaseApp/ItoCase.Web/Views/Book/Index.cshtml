@@ -18,6 +18,7 @@
                     </div>
                     <i class="fa-solid fa-chevron-down text-muted small"></i>
                 </div>
+
                 <div class="collapse show" id="uploadArea">
                     <div class="card-body bg-light bg-opacity-50">
                         @if (ViewBag.Message != null)
@@ -78,16 +79,98 @@
         </div>
     </div>
 
+    <!-- Filter Section (NEW) -->
+    <div class="col-12">
+        <div class="modern-card">
+            <div class="card-header d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+                 data-bs-target="#filterArea" style="cursor: pointer;">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="bg-indigo-50 text-primary rounded-circle d-flex align-items-center justify-content-center"
+                         style="width: 32px; height: 32px; background-color: #eef2ff;">
+                        <i class="fa-solid fa-filter small"></i>
+                    </div>
+                    <h6 class="mb-0 fw-bold text-dark">Gelişmiş Filtreleme</h6>
+                </div>
+                <i class="fa-solid fa-chevron-down text-muted small"></i>
+            </div>
+
+            <div class="collapse" id="filterArea">
+                <div class="card-body bg-light bg-opacity-50">
+                    <div class="row g-3">
+                        <!-- Metin Bazlı Filtreler -->
+                        <div class="col-md-3">
+                            <label class="form-label small text-muted fw-bold">Kategori</label>
+                            <input type="text" id="fCategory" class="form-control form-control-sm" placeholder="Örn: Roman" />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small text-muted fw-bold">Yazar</label>
+                            <input type="text" id="fAuthor" class="form-control form-control-sm" placeholder="Yazar Adı..." />
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small text-muted fw-bold">Basım Yılı</label>
+                            <input type="text" id="fYear" class="form-control form-control-sm" placeholder="2023" />
+                        </div>
+                        
+                        <!-- Sayısal Aralıklar -->
+                        <div class="col-md-4">
+                            <label class="form-label small text-muted fw-bold">Fiyat Aralığı (₺)</label>
+                            <div class="input-group input-group-sm">
+                                <input type="number" id="fMinPrice" class="form-control" placeholder="Min" />
+                                <span class="input-group-text bg-white">-</span>
+                                <input type="number" id="fMaxPrice" class="form-control" placeholder="Max" />
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label class="form-label small text-muted fw-bold">Satış Adedi</label>
+                            <div class="input-group input-group-sm">
+                                <input type="number" id="fMinSales" class="form-control" placeholder="Min" />
+                                <span class="input-group-text bg-white">-</span>
+                                <input type="number" id="fMaxSales" class="form-control" placeholder="Max" />
+                            </div>
+                        </div>
+
+                         <!-- Butonlar -->
+                        <div class="col-md-12 d-flex justify-content-end gap-2 mt-3">
+                            <button id="btnClearFilter" class="btn btn-light btn-sm px-3 border">
+                                <i class="fa-solid fa-eraser me-1"></i> Temizle
+                            </button>
+                            <button id="btnApplyFilter" class="btn btn-premium btn-sm px-4">
+                                <i class="fa-solid fa-filter me-1"></i> Filtrele
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- DataTables Section -->
     <div class="col-12">
         <div class="modern-card">
-            <div class="card-header bg-white">
+            <div class="card-header bg-white d-flex align-items-center justify-content-between flex-wrap gap-2">
                 <div class="d-flex align-items-center gap-2">
                     <div class="bg-indigo-50 text-primary rounded-circle d-flex align-items-center justify-content-center"
                         style="width: 32px; height: 32px; background-color: #eef2ff;">
                         <i class="fa-solid fa-book small"></i>
                     </div>
                     <h6 class="mb-0 fw-bold text-dark">Tüm Kitaplar</h6>
+                </div>
+                
+                <div class="d-flex gap-2">
+                    @if (User.IsInRole("Admin") || User.IsInRole("Uzman"))
+                    {
+                        <a asp-action="Create" class="btn btn-premium btn-sm rounded-pill px-3">
+                            <i class="fa-solid fa-plus me-1"></i> Yeni Ekle
+                        </a>
+                    }
+                    
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <button onclick="clearAllData()" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                            <i class="fa-solid fa-trash-can me-1"></i> Tümünü Sil
+                        </button>
+                    }
                 </div>
             </div>
             <div class="table-responsive">
@@ -124,7 +207,17 @@
                 "ajax": {
                     "url": "/Book/GetBooksAjax",
                     "type": "POST",
-                    "datatype": "json"
+                    "datatype": "json",
+                    "data": function (d) {
+                        // Filtre verilerini sunucuya gönderelim
+                        d.FilterCategory = $('#fCategory').val();
+                        d.FilterAuthor = $('#fAuthor').val();
+                        d.FilterYear = $('#fYear').val();
+                        d.FilterMinPrice = $('#fMinPrice').val();
+                        d.FilterMaxPrice = $('#fMaxPrice').val();
+                        d.FilterMinSales = $('#fMinSales').val();
+                        d.FilterMaxSales = $('#fMaxSales').val();
+                    }
                 },
                 "columns": [
                     {
@@ -188,6 +281,23 @@
                 }
             });
 
+            // --- FİLTRE BUTONLARI ---
+            $('#btnApplyFilter').click(function () {
+                $('#booksTable').DataTable().ajax.reload();
+            });
+
+            $('#btnClearFilter').click(function () {
+                $('#fCategory').val('');
+                $('#fAuthor').val('');
+                $('#fYear').val('');
+                $('#fMinPrice').val('');
+                $('#fMaxPrice').val('');
+                $('#fMinSales').val('');
+                $('#fMaxSales').val('');
+                
+                $('#booksTable').DataTable().ajax.reload();
+            });
+
             // --- GRAFİK İŞLEMLERİ ---
             var myChartContext = null;
             loadChart();
@@ -245,8 +355,18 @@
                             label: 'Veri Analizi',
                             data: values,
                             backgroundColor: backgroundColors,
-                            borderWidth: 0,
-                            borderRadius: 5
+                            
+                            borderWidth: type === 'line' ? 3 : 0,
+                            borderRadius: 5,
+                            tension: 0.3, 
+                            fill: false,
+                            
+                            // Colorful Points mimicking previous style
+                            pointBackgroundColor: backgroundColors,
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 6,
+                            pointHoverRadius: 8
                         }]
                     },
                     options: {
@@ -271,6 +391,9 @@
             }
         });
 
+    </script>
+
+    <script>
         function deleteBook(id) {
             if (confirm('Bu kitabı silmek istediğinize emin misiniz?')) {
                 $.ajax({
@@ -279,13 +402,38 @@
                     data: { id: id },
                     success: function (response) {
                         $('#booksTable').DataTable().ajax.reload();
-                        // alert yerine custom toast veya mevcut alert kalabilir
-                        // alert(response.message);
                     },
                     error: function () {
                         alert('Silme işlemi sırasında yetki hatası veya bir sorun oluştu.');
                     }
                 });
+            }
+        }
+
+        function clearAllData() {
+            if (confirm('DİKKAT! Tüm kitap verileri kalıcı olarak silinecektir.\nBu işlem geri alınamaz.\nDevam etmek istiyor musunuz?')) {
+                 if(confirm('Gerçekten tüm veri tabanını temizlemek istediğinize emin misiniz?')) {
+                    $.ajax({
+                        url: '/Book/ClearAll',
+                        type: 'POST',
+                        success: function (response) {
+                            if(response.success) {
+                                alert(response.message);
+                                $('#booksTable').DataTable().ajax.reload();
+                                // Grafiği yeniden yüklemek için global fonksiyona erişim gerekebilir veya sayfa yenilenir.
+                                // En temiz yöntem sayfayı yenilemek veya grafiği tetiklemektir.
+                                // loadChart() scope dışında olduğu için burada çalışmaz. 
+                                // Basitçe sayfayı yenileyelim:
+                                location.reload();
+                            } else {
+                                alert(response.message);
+                            }
+                        },
+                        error: function () {
+                            alert('İşlem sırasında bir hata oluştu.');
+                        }
+                    });
+                 }
             }
         }
     </script>
