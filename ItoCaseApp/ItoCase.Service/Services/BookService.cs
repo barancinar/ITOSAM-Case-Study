@@ -110,7 +110,10 @@ namespace ItoCase.Service.Services
                     (x.KitapAdi != null && x.KitapAdi.ToLower().Contains(searchValue)) ||
                     (x.Yazar != null && x.Yazar.ToLower().Contains(searchValue)) ||
                     (x.Yayinevi != null && x.Yayinevi.ToLower().Contains(searchValue)) ||
-                    (x.AnaKategori != null && x.AnaKategori.ToLower().Contains(searchValue))
+                    (x.AnaKategori != null && x.AnaKategori.ToLower().Contains(searchValue)) ||
+                    (x.BasimYili != null && x.BasimYili.Contains(searchValue)) || // Yıl araması
+                    (x.Fiyat.ToString().Contains(searchValue)) || // Fiyat araması
+                    (x.SatisRakamlari.ToString().Contains(searchValue)) // Satış rakamı araması
                 );
             }
 
@@ -177,6 +180,43 @@ namespace ItoCase.Service.Services
                 RecordsFiltered = totalRecordsFiltered,
                 Data = dataDto
             };
+        }
+
+        public async Task DeleteBookAsync(int id)
+        {
+            var book = await _unitOfWork.Books.Where(x => x.Id == id).FirstOrDefaultAsync();
+
+            if (book != null)
+            {
+                _unitOfWork.Books.Remove(book);
+                await _unitOfWork.CommitAsync();
+            }
+        }
+        public async Task<BookDto> GetBookByIdAsync(int id)
+        {
+            var book = await _unitOfWork.Books.Where(b => b.Id == id).FirstOrDefaultAsync();
+            if (book == null) throw new Exception("Kitap bulunamadı.");
+            return _mapper.Map<BookDto>(book);
+        }
+
+        public async Task UpdateBookAsync(BookDto bookDto)
+        {
+            var book = await _unitOfWork.Books.Where(b => b.Id == bookDto.Id).FirstOrDefaultAsync();
+            if (book != null)
+            {
+                book.KitapAdi = bookDto.KitapAdi;
+                book.Yazar = bookDto.Yazar;
+                book.Yayinevi = bookDto.Yayinevi;
+                book.AnaKategori = bookDto.AnaKategori;
+                book.Fiyat = bookDto.Fiyat ?? 0;
+                book.SatisRakamlari = bookDto.SatisRakamlari;
+                book.ISBN = bookDto.ISBN;
+                book.SayfaSayisi = bookDto.SayfaSayisi;
+                book.BasimYili = bookDto.BasimYili;
+                
+                _unitOfWork.Books.Update(book);
+                await _unitOfWork.CommitAsync();
+            }
         }
     }
 }

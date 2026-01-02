@@ -2,98 +2,120 @@
     ViewData["Title"] = "Kitap Yönetimi";
 }
 
-<div class="container-fluid mt-4">
-
+<div class="row g-4 fade-in">
     @if (User.IsInRole("Admin") || User.IsInRole("Uzman"))
     {
-        <div class="card shadow mb-4">
-            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">📂 Excel Veri Aktarımı</h5>
-                <button class="btn btn-light btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#uploadArea">
-                    Panel Aç/Kapat
-                </button>
-            </div>
-            <div class="collapse show" id="uploadArea">
-                <div class="card-body">
-                    @if (ViewBag.Message != null)
-                    {
-                        var alertClass = ViewBag.Status == "success" ? "alert-success" : "alert-danger";
-                        <div class="alert @alertClass">@ViewBag.Message</div>
-                    }
+        <div class="col-12">
+            <div class="modern-card">
+                <div class="card-header d-flex justify-content-between align-items-center" data-bs-toggle="collapse"
+                    data-bs-target="#uploadArea" style="cursor: pointer;">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="bg-indigo-50 text-primary rounded-circle d-flex align-items-center justify-content-center"
+                            style="width: 32px; height: 32px; background-color: #eef2ff;">
+                            <i class="fa-solid fa-file-excel small"></i>
+                        </div>
+                        <h6 class="mb-0 fw-bold text-dark">Excel Veri Aktarımı</h6>
+                    </div>
+                    <i class="fa-solid fa-chevron-down text-muted small"></i>
+                </div>
+                <div class="collapse show" id="uploadArea">
+                    <div class="card-body bg-light bg-opacity-50">
+                        @if (ViewBag.Message != null)
+                        {
+                            var alertClass = ViewBag.Status == "success" ? "alert-success" : "alert-danger";
+                            <div class="alert @alertClass border-0 shadow-sm d-flex align-items-center mb-3">
+                                <i class="fa-solid fa-circle-info me-2"></i> @ViewBag.Message
+                            </div>
+                        }
 
-                    <form asp-action="UploadExcel" asp-controller="Book" method="post" enctype="multipart/form-data"
-                        class="row g-3 align-items-end">
-                        <div class="col-md-10">
-                            <label class="form-label">Excel Dosyası Seç (Ito_Case_Kitaplari.xlsx)</label>
-                            <input type="file" name="file" class="form-control" accept=".xlsx, .xls" required />
-                        </div>
-                        <div class="col-md-2">
-                            <button type="submit" class="btn btn-success w-100">Yükle 🚀</button>
-                        </div>
-                    </form>
+                        <form asp-action="UploadExcel" asp-controller="Book" method="post" enctype="multipart/form-data"
+                            class="row g-3 align-items-end">
+                            <div class="col-md-9">
+                                <label class="form-label small text-muted text-uppercase fw-bold">Excel Dosyası
+                                    (.xlsx)</label>
+                                <input type="file" name="file" class="form-control" accept=".xlsx, .xls" required />
+                            </div>
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-premium w-100">
+                                    <i class="fa-solid fa-cloud-arrow-up me-2"></i> Yükle
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     }
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <div class="card shadow">
-                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                    <h5 class="m-0 font-weight-bold text-info">📊 Kitap Analiz Paneli</h5>
 
-                    <div class="d-flex gap-2">
-                        <select id="strategySelect" class="form-select form-select-sm" style="width: 200px;">
-                            <option value="BooksByCategory">Kategorilere Göre Dağılım</option>
-
-                            <option value="BestSellers">En Çok Satan 10 Kitap</option>
-                        </select>
-
-                        <select id="chartTypeSelect" class="form-select form-select-sm" style="width: 150px;">
-                            <option value="bar">Sütun Grafik (Bar)</option>
-                            <option value="pie">Pasta Grafik (Pie)</option>
-                            <option value="line">Çizgi Grafik (Line)</option>
-                            <option value="doughnut">Halka Grafik</option>
-                        </select>
+    <!-- Analysis Section -->
+    <div class="col-md-12">
+        <div class="modern-card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="bg-indigo-50 text-primary rounded-circle d-flex align-items-center justify-content-center"
+                        style="width: 32px; height: 32px; background-color: #eef2ff;">
+                        <i class="fa-solid fa-chart-pie small"></i>
                     </div>
+                    <h6 class="mb-0 fw-bold text-dark">Veri Analizi</h6>
                 </div>
-                <div class="card-body">
-                    <div style="height: 400px;">
-                        <canvas id="myChart"></canvas>
-                    </div>
+                <div class="d-flex gap-2">
+                    <select id="strategySelect" class="form-select form-select-sm" style="min-width: 200px;">
+                        <option value="BooksByCategory">Kategorilere Göre</option>
+                        <option value="BestSellers">Çok Satanlar</option>
+                    </select>
+                    <select id="chartTypeSelect" class="form-select form-select-sm" style="width: 120px;">
+                        <option value="bar">Bar</option>
+                        <option value="pie">Pie</option>
+                        <option value="line">Line</option>
+                    </select>
+                </div>
+            </div>
+            <div class="card-body">
+                <div style="height: 350px; position: relative;">
+                    <canvas id="myChart"></canvas>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="card shadow">
-        <div class="card-header bg-white py-3">
-            <h5 class="m-0 font-weight-bold text-primary">📚 Kitap Listesi (Server-side)</h5>
-        </div>
-        <div class="card-body">
+    <!-- DataTables Section -->
+    <div class="col-12">
+        <div class="modern-card">
+            <div class="card-header bg-white">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="bg-indigo-50 text-primary rounded-circle d-flex align-items-center justify-content-center"
+                        style="width: 32px; height: 32px; background-color: #eef2ff;">
+                        <i class="fa-solid fa-book small"></i>
+                    </div>
+                    <h6 class="mb-0 fw-bold text-dark">Tüm Kitaplar</h6>
+                </div>
+            </div>
             <div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover" id="booksTable" width="100%"
-                    cellspacing="0">
+                <table class="table modern-table table-hover mb-0" id="booksTable" width="100%">
                     <thead>
                         <tr>
-                            <th>Kitap Adı</th>
+                            <th class="ps-4">Kitap Adı</th>
                             <th>Yazar</th>
                             <th>Yayınevi</th>
                             <th>Kategori</th>
                             <th>Fiyat</th>
                             <th>Satış</th>
+                            <th class="text-end pe-4">İşlemler</th>
                         </tr>
                     </thead>
-                    <tbody>
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </div>
         </div>
     </div>
-
 </div>
 
 @section Scripts {
     <script>
+        // Rol bilgisini client-side'a taşıyoruz
+        var isAdmin = @Json.Serialize(User.IsInRole("Admin"));
+        var isUzman = @Json.Serialize(User.IsInRole("Uzman"));
+
         $(document).ready(function () {
             $('#booksTable').DataTable({
                 "processing": true,
@@ -105,50 +127,71 @@
                     "datatype": "json"
                 },
                 "columns": [
-                    { "data": "kitapAdi", "name": "KitapAdi", "autoWidth": true },
+                    {
+                        "data": "kitapAdi",
+                        "name": "KitapAdi",
+                        "autoWidth": true,
+                        "render": function (data) {
+                            return `<span class="fw-bold text-dark">${data}</span>`;
+                        }
+                    },
                     { "data": "yazar", "name": "Yazar", "autoWidth": true },
                     { "data": "yayinevi", "name": "Yayinevi", "autoWidth": true },
-                    { "data": "anaKategori", "name": "AnaKategori", "autoWidth": true },
+                    {
+                        "data": "anaKategori",
+                        "name": "AnaKategori",
+                        "render": function (data) {
+                            return `<span class="badge bg-light text-secondary border">${data}</span>`;
+                        }
+                    },
                     {
                         "data": "fiyat", "name": "Fiyat",
                         "render": function (data) {
-                            return parseFloat(data).toFixed(2) + ' ₺';
+                            return `<div class="text-nowrap text-success fw-bold">${parseFloat(data).toFixed(2)} ₺</div>`;
                         }
                     },
-                    { "data": "satisRakamlari", "name": "SatisRakamlari", "autoWidth": true }
-                ],
-                // DOM Ayarı: Tablonun üstünü ve altını düzenler (Çift yazıyı engeller)
-                "dom": '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
-                    '<"row"<"col-sm-12"tr>>' +
-                    '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+                    { "data": "satisRakamlari", "name": "SatisRakamlari", "autoWidth": true },
+                    {
+                        "data": "id",
+                        "render": function (data, type, row) {
+                            var buttons = `<div class="d-flex justify-content-end gap-1 text-nowrap">`;
 
-                // Türkçe Dil Ayarları (Manuel Tanımlama)
+                            // Edit Butonu
+                            if (isAdmin || isUzman) {
+                                buttons += `<a href="/Book/Edit/${data}" class="btn btn-outline-primary btn-sm rounded-circle" title="Düzenle"><i class="fa-solid fa-pen"></i></a>`;
+                            }
+
+                            // Delete Butonu
+                            if (isAdmin) {
+                                buttons += `<button class="btn btn-outline-danger btn-sm rounded-circle" title="Sil" onclick="deleteBook(${data})"><i class="fa-solid fa-trash"></i></button>`;
+                            }
+
+                            buttons += `</div>`;
+
+                            if (buttons === `<div class="d-flex justify-content-end gap-1 text-nowrap"></div>`) return '<span class="text-muted small">Yetki Yok</span>';
+
+                            return buttons;
+                        },
+                        "orderable": false,
+                        "className": "text-end pe-4"
+                    }
+                ],
+                "dom": '<"row p-3"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+                    '<"row"<"col-sm-12"tr>>' +
+                    '<"row p-3"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
                 "language": {
-                    "emptyTable": "Tabloda herhangi bir veri mevcut değil",
-                    "info": "_TOTAL_ kayıttan _START_ - _END_ arasındaki kayıtlar gösteriliyor",
-                    "infoEmpty": "Kayıt yok",
-                    "infoFiltered": "(_MAX_ kayıt içerisinden bulunan)",
-                    "lengthMenu": "Sayfada _MENU_ kayıt göster",
-                    "loadingRecords": "Yükleniyor...",
-                    "processing": "İşleniyor...",
-                    "search": "Ara:",
-                    "zeroRecords": "Eşleşen kayıt bulunamadı",
+                    "url": "/datatables/i18n/tr.json",
                     "paginate": {
-                        "first": "İlk",
-                        "last": "Son",
-                        "next": "Sonraki",
-                        "previous": "Önceki"
+                        "previous": "Önceki",
+                        "next": "Sonraki"
                     }
                 }
             });
 
-            // Global değişken (Grafiği silip yeniden yaratmak için gerekli)
+            // --- GRAFİK İŞLEMLERİ ---
             var myChartContext = null;
-
-            // Sayfa açılınca ilk grafiği yükle
             loadChart();
 
-            // Kullanıcı seçim yapınca grafiği güncelle
             $('#strategySelect, #chartTypeSelect').change(function () {
                 loadChart();
             });
@@ -160,55 +203,90 @@
                 $.ajax({
                     url: '/Book/GetChartData',
                     type: 'GET',
-                    data: { strategy: strategy }, // Controller'a hangi stratejiyi istediğimizi söylüyoruz
+                    data: { strategy: strategy },
                     success: function (response) {
                         renderChart(response, chartType);
                     },
                     error: function (err) {
                         console.error("Grafik verisi alınamadı:", err);
-                        // Eğer strateji bulunamazsa kullanıcıya kibar bir hata gösterilebilir
                     }
                 });
             }
 
             function renderChart(data, type) {
                 var ctx = document.getElementById('myChart').getContext('2d');
-
-                // Eğer eski bir grafik varsa yok et (Yoksa üst üste biner)
                 if (myChartContext != null) {
                     myChartContext.destroy();
                 }
-
-                // Backend'den gelen List<ChartDto> verisini ayıkla
                 var labels = data.map(x => x.label);
                 var values = data.map(x => x.value);
 
-                // Rastgele renkler üret (Estetik için)
-                var backgroundColors = labels.map(() =>
-                    `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.6)`
-                );
+                // Daha estetik renk paleti
+                var palette = [
+                    'rgba(255, 99, 132, 0.7)',
+                    'rgba(54, 162, 235, 0.7)',
+                    'rgba(255, 206, 86, 0.7)',
+                    'rgba(75, 192, 192, 0.7)',
+                    'rgba(153, 102, 255, 0.7)',
+                    'rgba(255, 159, 64, 0.7)',
+                    'rgba(199, 199, 199, 0.7)',
+                    'rgba(83, 102, 255, 0.7)',
+                    'rgba(40, 159, 64, 0.7)',
+                    'rgba(210, 99, 132, 0.7)',
+                ];
 
-                // Yeni grafiği oluştur
+                var backgroundColors = labels.map((_, i) => palette[i % palette.length]);
+
                 myChartContext = new Chart(ctx, {
-                    type: type, // Kullanıcının seçtiği tip (bar, pie, vs.)
+                    type: type,
                     data: {
                         labels: labels,
                         datasets: [{
                             label: 'Veri Analizi',
                             data: values,
                             backgroundColor: backgroundColors,
-                            borderWidth: 1
+                            borderWidth: 0,
+                            borderRadius: 5
                         }]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        },
                         scales: {
-                            y: { beginAtZero: true, display: type !== 'pie' && type !== 'doughnut' } // Pasta grafikte Y ekseni olmaz
+                            y: {
+                                beginAtZero: true,
+                                display: type !== 'pie' && type !== 'doughnut',
+                                grid: { color: 'rgba(0,0,0,0.05)' }
+                            },
+                            x: {
+                                display: type !== 'pie' && type !== 'doughnut',
+                                grid: { display: false }
+                            }
                         }
                     }
                 });
             }
         });
+
+        function deleteBook(id) {
+            if (confirm('Bu kitabı silmek istediğinize emin misiniz?')) {
+                $.ajax({
+                    url: '/Book/Delete',
+                    type: 'POST',
+                    data: { id: id },
+                    success: function (response) {
+                        $('#booksTable').DataTable().ajax.reload();
+                        // alert yerine custom toast veya mevcut alert kalabilir
+                        // alert(response.message);
+                    },
+                    error: function () {
+                        alert('Silme işlemi sırasında yetki hatası veya bir sorun oluştu.');
+                    }
+                });
+            }
+        }
     </script>
 }

@@ -2,6 +2,7 @@ namespace ItoCase.Core.DTOs
 {
     public class BookDto
     {
+        public int Id { get; set; }
         public string? AnaKategori { get; set; }
         public string? Turu { get; set; }
         public string? KitapAdi { get; set; }

@@ -52,9 +52,9 @@ namespace ItoCase.Web.Controllers
                 ViewBag.Message = "Harika! Excel verileri başarıyla veritabanına aktarıldı.";
                 ViewBag.Status = "success";
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                ViewBag.Message = $"Hata oluştu: {ex.Message}";
+                ViewBag.Message = "Veritabanı hatası oluştu.";
                 ViewBag.Status = "error";
             }
 
@@ -74,6 +74,55 @@ namespace ItoCase.Web.Controllers
         {
             var data = await _chartService.GetDataByStrategyAsync(strategy);
             return Json(data);
+        }
+
+        // CRUD - Delete Metodu
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _bookService.DeleteBookAsync(id);
+            return Json(new { success = true, message = "Kitap başarıyla silindi." });
+        }
+
+        // CRUD - Edit (GET)
+        [HttpGet]
+        [Authorize(Roles = "Admin,Uzman")]
+        public async Task<IActionResult> Edit(int id)
+        {
+            try
+            {
+                var book = await _bookService.GetBookByIdAsync(id);
+                return View(book);
+            }
+            catch (Exception)
+            {
+                // Hata olursa Index'e dönüp mesaj gösterebiliriz veya Error sayfasına
+                return RedirectToAction("Index");
+            }
+        }
+
+        // CRUD - Edit (POST)
+        [HttpPost]
+        [Authorize(Roles = "Admin,Uzman")]
+        public async Task<IActionResult> Edit(BookDto model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
+            {
+                await _bookService.UpdateBookAsync(model);
+                // Başarılı olursa listeye dön
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Güncelleme hatası: " + ex.Message);
+                return View(model);
+            }
         }
     }
 }

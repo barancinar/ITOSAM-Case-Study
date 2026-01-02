@@ -37,6 +37,7 @@ builder.Services.AddScoped<ChartService>();
 
 // Application Services
 builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddAutoMapper(typeof(ItoCase.Service.Mappings.MapProfile));
 
 
@@ -58,6 +59,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

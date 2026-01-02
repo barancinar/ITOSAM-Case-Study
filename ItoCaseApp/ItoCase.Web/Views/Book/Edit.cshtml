@@ -1,0 +1,94 @@
+@model ItoCase.Core.DTOs.BookDto
+
+@{
+    ViewData["Title"] = "Kitap Düzenle";
+}
+
+<div class="row justify-content-center py-4 fade-in">
+    <div class="col-md-9 col-lg-7">
+        <div class="modern-card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-2">
+                     <div class="bg-indigo-50 text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: #eef2ff;">
+                        <i class="fa-solid fa-pen-to-square small"></i>
+                     </div>
+                    <h5 class="mb-0 fw-bold text-dark">Kitap Düzenle</h5>
+                </div>
+                <a asp-action="Index" class="btn btn-light btn-sm border text-muted">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Geri
+                </a>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="KitapAdi" class="form-label fw-bold text-secondary">Kitap Adı</label>
+                        <input asp-for="KitapAdi" class="form-control rounded-pill shadow-sm" />
+                        <span asp-validation-for="KitapAdi" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Yazar" class="form-label fw-bold text-secondary">Yazar</label>
+                        <input asp-for="Yazar" class="form-control rounded-pill shadow-sm" />
+                        <span asp-validation-for="Yazar" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Yayinevi" class="form-label fw-bold text-secondary">Yayınevi</label>
+                        <input asp-for="Yayinevi" class="form-control rounded-pill shadow-sm" />
+                        <span asp-validation-for="Yayinevi" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="AnaKategori" class="form-label fw-bold text-secondary">Kategori</label>
+                        <input asp-for="AnaKategori" class="form-control rounded-pill shadow-sm" />
+                        <span asp-validation-for="AnaKategori" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="Fiyat" class="form-label fw-bold text-secondary">Fiyat (₺)</label>
+                        <input asp-for="Fiyat" type="number" step="0.01" class="form-control rounded-pill shadow-sm" />
+                        <span asp-validation-for="Fiyat" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="SatisRakamlari" class="form-label fw-bold text-secondary">Satış Adedi</label>
+                        <input asp-for="SatisRakamlari" type="number" class="form-control rounded-pill shadow-sm" />
+                        <span asp-validation-for="SatisRakamlari" class="text-danger small"></span>
+                    </div>
+                
+                    <div class="col-md-4">
+                        <label asp-for="ISBN" class="form-label fw-bold text-secondary">ISBN</label>
+                        <input asp-for="ISBN" class="form-control rounded-pill shadow-sm" />
+                        <span asp-validation-for="ISBN" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="SayfaSayisi" class="form-label fw-bold text-secondary">Sayfa Sayısı</label>
+                        <input asp-for="SayfaSayisi" class="form-control rounded-pill shadow-sm" />
+                        <span asp-validation-for="SayfaSayisi" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="BasimYili" class="form-label fw-bold text-secondary">Basım Yılı</label>
+                        <input asp-for="BasimYili" class="form-control rounded-pill shadow-sm" />
+                        <span asp-validation-for="BasimYili" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex justify-content-end">
+                    <button type="submit" class="btn btn-premium px-5">
+                        <i class="fa-solid fa-floppy-disk me-2"></i> Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

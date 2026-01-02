@@ -21,7 +21,7 @@ TARGET_URLS = {
 }
 
 # Kategori başına en fazla 50 kitap
-TARGET_COUNT = 50 
+# TARGET_COUNT = 50 
 
 def get_driver():
     opts = Options()
@@ -61,7 +61,7 @@ def scrape_bkm_v6_smooth():
     wait = WebDriverWait(driver, 15)
     all_data = []
 
-    print(f"🚀 Veri Kazıma Başlatılıyor (Smooth Scroll Modu - Hedef: {TARGET_COUNT})...")
+    print(f"🚀 Veri Kazıma Başlatılıyor (Smooth Scroll Modu - Hedef: Tamamı)...")
 
     for cat, url in TARGET_URLS.items():
         print(f"\n📂 Kategori: {cat}")
@@ -71,7 +71,7 @@ def scrape_bkm_v6_smooth():
         product_links = []
         no_change_counter = 0 
         
-        while len(product_links) < TARGET_COUNT:
+        while True:
             
             prev_len = len(product_links)
             
@@ -94,7 +94,7 @@ def scrape_bkm_v6_smooth():
             
             for t in temp_links: product_links.append(t)
             
-            print(f"   🔄 Scroll bitti. Toplanan: {len(product_links)} / {TARGET_COUNT}")
+            print(f"   🔄 Scroll bitti. Toplanan toplam ürün: {len(product_links)}")
 
             if len(product_links) == prev_len:
                 no_change_counter += 1
@@ -105,7 +105,7 @@ def scrape_bkm_v6_smooth():
             else:
                 no_change_counter = 0 
 
-        final_links = product_links[:TARGET_COUNT]
+        final_links = product_links
         print(f"   ✅ {len(final_links)} kitap detaya gidilecek...")
 
         for link in final_links:

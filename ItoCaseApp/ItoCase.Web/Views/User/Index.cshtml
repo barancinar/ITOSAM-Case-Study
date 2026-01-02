@@ -1,0 +1,87 @@
+@model List<ItoCase.Core.DTOs.UserDto>
+@{
+    ViewData["Title"] = "Kullanıcı Yönetimi";
+}
+
+<div class="row pt-4 fade-in">
+    <div class="col-12">
+        <div class="modern-card">
+            <div class="card-header d-flex justify-content-between align-items-center bg-white">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="bg-indigo-50 text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; background-color: #eef2ff;">
+                        <i class="fa-solid fa-users small"></i>
+                    </div>
+                    <h5 class="mb-0 fw-bold text-dark">Kullanıcı Yönetimi</h5>
+                </div>
+                <a asp-action="Create" class="btn btn-premium btn-sm">
+                    <i class="fa-solid fa-plus me-1"></i> Yeni Kullanıcı
+                </a>
+            </div>
+    
+            <div class="table-responsive">
+                <table class="table modern-table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">Kullanıcı Adı</th>
+                            <th>Ad</th>
+                            <th>Soyad</th>
+                            <th>E-Posta</th>
+                            <th>Roller</th>
+                            <th class="text-end pe-4">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td class="ps-4 fw-medium text-dark">@user.UserName</td>
+                                <td>@user.FirstName</td>
+                                <td>@user.LastName</td>
+                                <td class="text-muted">@user.Email</td>
+                                <td>
+                                    @foreach (var role in user.Roles)
+                                    {
+                                        <span class="badge badge-soft bg-indigo-50 text-primary border border-primary border-opacity-25 me-1" style="background-color: #eef2ff;">@role</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    @if(user.UserName?.ToLower() != "admin")
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-light border text-primary me-1" title="Düzenle">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </a>
+                                        <button class="btn btn-sm btn-light border text-danger" title="Sil" onclick="deleteUser('@user.Id')">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                         <span class="badge bg-secondary opacity-50"><i class="fa-solid fa-lock me-1"></i> Sistem</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function deleteUser(id) {
+            if (confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?')) {
+                $.ajax({
+                    url: '/User/Delete',
+                    type: 'POST',
+                    data: { id: id },
+                    success: function (res) {
+                        if (res.success) location.reload();
+                        else alert(res.message);
+                    }
+                });
+            }
+        }
+    </script>
+}
