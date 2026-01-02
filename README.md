@@ -1,4 +1,4 @@
-# 📚 ITOSAM Case Study - Kitap Yönetim ve Veri Analizi Sistemi
+# 📚 ITOSAM Case Study
 
 Bu proje, **İstanbul Ticaret Odası (İTO)** iş görüşmesi kapsamında verilen Case çalışması için geliştirilmiştir. Proje iki ana modülden oluşmaktadır:
 
